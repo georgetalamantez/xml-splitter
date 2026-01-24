@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML/HTML Splitter</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>XML Splitter</h1>
+            <p class="subtitle">Efficiently split large XML/HTML files into manageable chunks</p>
+
+            <form id="splitForm">
+                <div class="form-group">
+                    <label for="file">Upload File (XML, HTML, TXT)</label>
+                    <input type="file" id="file" name="file" required accept=".html,.xml,.txt">
+                </div>
+
+                <div class="form-group">
+                    <label for="selector">Split By</label>
+                    <select id="selector" name="selector">
+                        <option value="chapter">Chapter (Smart Detect)</option>
+                        <option value="h1">Heading 1 (h1)</option>
+                        <option value="h2" selected>Heading 2 (h2)</option>
+                        <option value="h3">Heading 3 (h3)</option>
+                        <option value="custom">Custom Selector...</option>
+                    </select>
+                    <input type="text" id="customSelector" name="customSelector" placeholder="e.g. div.chapter"
+                        style="display: none; margin-top: 10px;">
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-primary">Split & Download Zip</button>
+            </form>
+
+            <div id="status"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('splitForm');
+        const status = document.getElementById('status');
+        const submitBtn = document.getElementById('submitBtn');
+        const selectorSelect = document.getElementById('selector');
+        const customSelectorInput = document.getElementById('customSelector');
+
+        // Toggle custom input visibility
+        selectorSelect.addEventListener('change', () => {
+            if (selectorSelect.value === 'custom') {
+                customSelectorInput.style.display = 'block';
+                customSelectorInput.required = true;
+            } else {
+                customSelectorInput.style.display = 'none';
+                customSelectorInput.required = false;
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            // Handle custom selector logic
+            const selectorVal = document.getElementById('selector').value;
+            if (selectorVal === 'custom') {
+                formData.set('selector', document.getElementById('customSelector').value);
+            }
+
+            showStatus('Processing... Please wait...', 'status-loading');
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/split', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    throw new Error(text);
+                }
+
+                // Handle download
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `split_files_${Date.now()}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+
+                showStatus('Success! Download started.', 'status-success');
+            } catch (err) {
+                showStatus('Error: ' + err.message, 'status-error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        function showStatus(message, className) {
+            status.textContent = message;
+            status.className = ''; // Reset classes
+            status.classList.add(className);
+            status.style.display = 'block';
+
+            // Force reflow for fade animation
+            void status.offsetWidth;
+            status.classList.add('visible');
+        }
+    </script>
+</body>
+
+</html>

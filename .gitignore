@@ -1,0 +1,10 @@
+node_modules/
+output/
+uploads/
+debug_output/
+debug_output_sample/
+logs/
+*.log
+*.txt
+!marker_list.txt
+!readme.txt

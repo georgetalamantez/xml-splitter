@@ -1,0 +1,107 @@
+﻿Marker 0: ID COPYRIGHT_LEGALESE_2 Text: Copyright Notice
+Marker 1: ID COPYRIGHT_LEGALESE_17 Text: Limitation of Liability; Indemnity by Us
+Marker 2: ID COPYRIGHT_LEGALESE_22 Text: Permitted Use; Limited Waiver of Privacy
+Marker 3: ID COPYRIGHT_LEGALESE_27 Text: Book Quality
+Marker 4: ID h2_0000000 Text: Advances in Computational Intelligence a
+Marker 5: ID h2_0000001 Text: Chief Patrons
+Marker 6: ID h2_0000002 Text: Patrons
+Marker 7: ID h2_0000003 Text: General Chair
+Marker 8: ID h2_0000004 Text: Program Chair
+Marker 9: ID h2_0000005 Text: Convenor
+Marker 10: ID h2_0000006 Text: Co-convenor
+Marker 11: ID h2_0000007 Text: Steering Committee
+Marker 12: ID h2_0000008 Text: Advisory Board-International
+Marker 13: ID h2_0000009 Text: Advisory Board-National
+Marker 14: ID h2_0000010 Text: Organizing Committee
+Marker 15: ID h2_0000011 Text: Program Committee
+Marker 16: ID h2_0000012 Text: Publication Committee
+Marker 17: ID h2_0000013 Text: Publicity Committee International
+Marker 18: ID h2_0000014 Text: Publicity Committee National
+Marker 19: ID h2_0000015 Text: Sponsorship Committee
+Marker 20: ID h2_0000016 Text: Accommodation Committee
+Marker 21: ID h2_0000017 Text: Organizing CommitteeΓÇôAU
+Marker 22: ID h2_0000018 Text: Technical Program Committee
+Marker 23: ID h2_0000019 Text: Optimizing Complex Challenges: Harnessin
+Marker 24: ID h2_0000020 Text: Abstract
+Marker 25: ID h2_0000021 Text: State-of-the-Art Techniques and Evaluati
+Marker 26: ID h2_0000022 Text: Abstract
+Marker 27: ID h2_0000023 Text: IDSSA: An Intrusion Detection System wit
+Marker 28: ID h2_0000024 Text: Abstract
+Marker 29: ID h2_0000025 Text: Privacy and Security Aspects of Indian P
+Marker 30: ID h2_0000026 Text: Abstract
+Marker 31: ID h2_0000027 Text: Digital HR Strategy in the Modern Busine
+Marker 32: ID h2_0000028 Text: Abstract
+Marker 33: ID h2_0000029 Text: A Model for Quality Management in Indust
+Marker 34: ID h2_0000030 Text: Abstract
+Marker 35: ID h2_0000031 Text: An Extensive Study on Financial Fraud De
+Marker 36: ID h2_0000032 Text: Abstract
+Marker 37: ID h2_0000033 Text: Exploring the State of the Art in Mobile
+Marker 38: ID h2_0000034 Text: Abstract
+Marker 39: ID h2_0000035 Text: Leveraging Bidirectional Encoder Represe
+Marker 40: ID h2_0000036 Text: Abstract
+Marker 41: ID h2_0000037 Text: Securing the Future of Connected Cars: I
+Marker 42: ID h2_0000038 Text: Abstract
+Marker 43: ID h2_0000039 Text: Smart Surveillance Using OpenCV
+Marker 44: ID h2_0000040 Text: Abstract
+Marker 45: ID h2_0000041 Text: Hyperspectral Band Selection Considering
+Marker 46: ID h2_0000042 Text: Abstract
+Marker 47: ID h2_0000043 Text: Water Pumping Requirement Prediction in 
+Marker 48: ID h2_0000044 Text: Abstract
+Marker 49: ID h2_0000045 Text: Hybrid Method for Discovering DDOS Attac
+Marker 50: ID h2_0000046 Text: Abstract
+Marker 51: ID h2_0000047 Text: A Novel Chaotic Map-Based Noise-Resistan
+Marker 52: ID h2_0000048 Text: Abstract
+Marker 53: ID h2_0000049 Text: Survey of Attacks, Detection Techniques,
+Marker 54: ID h2_0000050 Text: Abstract
+Marker 55: ID h2_0000051 Text: Big DataΓÇÖs Ethical Frontier: Addressing 
+Marker 56: ID h2_0000052 Text: Abstract
+Marker 57: ID h2_0000053 Text: Evaluating Security Risks and Protecting
+Marker 58: ID h2_0000054 Text: Abstract
+Marker 59: ID h2_0000055 Text: Neural Networks and GPU-Based Weed Detec
+Marker 60: ID h2_0000056 Text: Abstract
+Marker 61: ID h2_0000057 Text: Intelligent ECG-Based COVID-19 Diagnose 
+Marker 62: ID h2_0000058 Text: Abstract
+Marker 63: ID h2_0000059 Text: Analyzing Twitter Data Using Apache Hive
+Marker 64: ID h2_0000060 Text: Abstract
+Marker 65: ID h2_0000061 Text: Detection of Phishing Websites Using Lin
+Marker 66: ID h2_0000062 Text: Abstract
+Marker 67: ID h2_0000063 Text: Forecasting Financial Commodities Using 
+Marker 68: ID h2_0000064 Text: Abstract
+Marker 69: ID h2_0000065 Text: Plant Leaf Disease Classification Using 
+Marker 70: ID h2_0000066 Text: Abstract
+Marker 71: ID h2_0000067 Text: A Survey on Vehicle Detection, Counting,
+Marker 72: ID h2_0000068 Text: Abstract
+Marker 73: ID h2_0000069 Text: Smart Dustbin Using IoT
+Marker 74: ID h2_0000070 Text: Abstract
+Marker 75: ID h2_0000071 Text: Performance Assessment of the Map Reduce
+Marker 76: ID h2_0000072 Text: Abstract
+Marker 77: ID h2_0000073 Text: Artificial Intelligence in Finance: A Sy
+Marker 78: ID h2_0000074 Text: Abstract
+Marker 79: ID h2_0000075 Text: UAV Data Collection and Analyzing Model 
+Marker 80: ID h2_0000076 Text: Abstract
+Marker 81: ID h2_0000077 Text: MAFD: Model Agnostic Forest Densenet App
+Marker 82: ID h2_0000078 Text: Abstract
+Marker 83: ID h2_0000079 Text: A General Comparative Study of Various V
+Marker 84: ID h2_0000080 Text: Abstract
+Marker 85: ID h2_0000081 Text: Enhancing Steganography Security: A Dual
+Marker 86: ID h2_0000082 Text: Abstract
+Marker 87: ID h2_0000083 Text: Deep Features for Age-Invariant Face Rec
+Marker 88: ID h2_0000084 Text: Abstract
+Marker 89: ID h2_0000085 Text: Efficient Auditing Scheme for Secure Dat
+Marker 90: ID h2_0000086 Text: Abstract
+Marker 91: ID h2_0000087 Text: CNN Architectures in Lung Carcinoma Nodu
+Marker 92: ID h2_0000088 Text: Abstract
+Marker 93: ID h2_0000089 Text: Applying the Image Outline Creation Proc
+Marker 94: ID h2_0000090 Text: Abstract
+Marker 95: ID h2_0000091 Text: Security-Aware Information Classificatio
+Marker 96: ID h2_0000092 Text: Abstract
+Marker 97: ID h2_0000093 Text: Study and Analysis of FIDO2 Passwordless
+Marker 98: ID h2_0000094 Text: Abstract
+Marker 99: ID h2_0000095 Text: Identifying Objects at Construction Site
+Marker 100: ID h2_0000096 Text: Abstract
+Marker 101: ID h2_0000097 Text: Apparent Personality Traits Detection Ba
+Marker 102: ID h2_0000098 Text: Abstract
+Marker 103: ID h2_0000099 Text: Identification and Forecast of Heart and
+Marker 104: ID h2_0000100 Text: Abstract
+Marker 105: ID h2_0000101 Text: Braille-to-Voice Converter Using Image P
+Marker 106: ID h2_0000102 Text: Abstract
