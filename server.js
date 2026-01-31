@@ -49,40 +49,68 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
         // Read file
         const content = await fs.readFile(file.path, 'utf8');
         const ext = path.extname(file.originalname) || '.xml';
-
-        // Smart Selector Logic
-        if (selector === 'chapter') {
-            if (content.includes('<dtbook') || content.includes('<bodymatter')) {
-                selector = 'bodymatter > level1';
-                logger.info('Smart Detect: Identified DTBook/DAISY structure. Using "bodymatter > level1"');
-            } else if (content.includes('<html')) {
-                if (content.includes('<h1')) {
-                    selector = 'h1';
-                    logger.info('Smart Detect: Generic HTML. Defaulting "Chapter" to "h1"');
-                } else {
-                    selector = 'body > section, body > div';
-                    logger.info('Smart Detect: Generic HTML with no h1. Trying top-level sections.');
-                }
-            } else {
-                selector = 'h1'; // Fallback
-            }
-        }
-
-        logger.info(`Processing file: ${file.originalname} with selector: ${selector} using Preamble-Aware Tree-Aware Pruning`);
+        const isDTBook = content.includes('<dtbook');
 
         // Load into Cheerio with XML mode
-        const $ = cheerio.load(content, { xml: true, decodeEntities: false });
+        const $ = cheerio.load(content, { xmlMode: true, decodeEntities: false });
 
-        // Identify targets
-        const targets = $(selector);
+        // Strip hidden attributes that cause issues with readers
+        $('[hidden]').removeAttr('hidden');
+        $('[aria-hidden]').removeAttr('aria-hidden');
+
+        let targets;
+        if (selector === 'chapter' && isDTBook) {
+            // Enhanced Multi-Phase DTBook Selector
+            // Phase 1: High Confidence Markers (Chapters, Parts, Main Headings)
+            let chapterMarkers = $('level1:has(h1.ChapterTitle), level1:has(h1.chapterNumber), level1:has(h1.partNumber), level1:has(h1.mainHeading), level1[id^="ch"], level1[id^="chapter"]');
+
+            // Filter out sub-sections that might be wrapped in level1 (common in some exports)
+            // Specific exclusion for classes known to be sub-headings even if they are top-level in their parent
+            chapterMarkers = chapterMarkers.filter((i, el) => {
+                const header = $(el).find('h1').first();
+                const cls = header.attr('class') || '';
+                // If it has a sub-heading class, it's probably not a chapter start
+                if (cls.match(/heading-[1-9]/i)) return false;
+                return true;
+            });
+
+            if (chapterMarkers.length > 0) {
+                targets = chapterMarkers;
+                logger.info(`Smart Detect: DTBook chapters found by high-confidence markers (${targets.length})`);
+            } else {
+                // Phase 2: Pattern-based (Specific to Packt/Complex structure uXX-)
+                const patternMarkers = $('level1:has(h1[id^="u"])');
+
+                if (patternMarkers.length > 0) {
+                    targets = patternMarkers;
+                    logger.info(`Smart Detect: DTBook chapters found by ID pattern uXX- (${targets.length})`);
+                } else {
+                    // Phase 3: Fallback to standard level1 hierarchy
+                    targets = $('bodymatter > level1, book > level1, frontmatter > level1:has(h1)');
+                    logger.info(`Smart Detect: DTBook chapters found by hierarchy/fallback (${targets.length})`);
+                }
+            }
+        } else if (selector === 'chapter') {
+            // Generic Chapter logic
+            targets = $('h1, h2, section, article');
+            logger.info(`Smart Detect: Generic chapters found (${targets.length})`);
+        } else {
+            // Custom selector from user
+            targets = $(selector);
+            logger.info(`Using provided selector: ${selector} (${targets.length} matches)`);
+        }
+
+        if (targets.length === 0) {
+            logger.warn('No markers found with primary logic. Falling back to top-level divs.');
+            targets = $('body > div, book > div');
+        }
 
         // Tag targets with unique IDs
         targets.each((i, el) => {
             $(el).attr('data-split-id', `marker-${i}`);
         });
 
-
-        // Function to prune everything before a node (relative to container)
+        // Helper functions for pruning
         function pruneBefore($, node) {
             let curr = $(node);
             while (curr.length && curr.parent().length) {
@@ -91,7 +119,6 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
             }
         }
 
-        // Function to prune everything after/at a node (relative to container)
         function pruneFrom($, node) {
             if (!node) return;
             let curr = $(node);
@@ -110,16 +137,14 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
         const sections = [];
         const originalHtml = $.html();
 
-        // 1. Process Preamble (everything before first marker)
+        // 1. Process Preamble (everything before the first marker)
         if (targets.length > 0) {
-            const $preamble = cheerio.load(originalHtml, { xml: true, decodeEntities: false });
+            const $preamble = cheerio.load(originalHtml, { xmlMode: true, decodeEntities: false });
             const firstMarker = $preamble('[data-split-id="marker-0"]')[0];
             if (firstMarker) {
                 pruneFrom($preamble, firstMarker);
-                // Clean up ALL temporary attributes
                 $preamble('[data-split-id]').removeAttr('data-split-id');
                 const preambleXml = $preamble.html();
-                // Check if preamble has meaningful content
                 if (preambleXml.replace(/\s+/g, '').length > 50) {
                     const filename = `000_Preamble${ext}`;
                     await fs.writeFile(path.join(outputDir, filename), preambleXml);
@@ -130,7 +155,7 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
 
         // 2. Process Sections
         for (let i = 0; i < targets.length; i++) {
-            const $copy = cheerio.load(originalHtml, { xml: true, decodeEntities: false });
+            const $copy = cheerio.load(originalHtml, { xmlMode: true, decodeEntities: false });
             const startNode = $copy(`[data-split-id="marker-${i}"]`)[0];
             const endNode = $copy(`[data-split-id="marker-${i + 1}"]`)[0];
 
@@ -145,13 +170,14 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
                 $copy('[data-split-id]').removeAttr('data-split-id');
 
                 const sectionXml = $copy.html();
-                // Extract title: prioritize first heading within the target
+
+                // Extract title for filename
                 const $target = $(targets[i]);
                 let title = $target.find('h1, h2, h3, h4, h5, h6').first().text().trim();
                 if (!title) {
                     title = $target.text().trim();
                 }
-                const safeTitle = title.replace(/[^\w\d-_]/g, '_').substring(0, 100) || `section_${i}`;
+                const safeTitle = title.replace(/[^\w\d-_]/g, '_').substring(0, 80) || `section_${i}`;
                 const filename = `${String(i + 1).padStart(3, '0')}_${safeTitle}${ext}`;
 
                 await fs.writeFile(path.join(outputDir, filename), sectionXml);
@@ -159,19 +185,16 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
             }
         }
 
-        // 3. Process Tail (everything after last marker)
+        // 3. Process Postscript (everything after the last marker)
         if (targets.length > 0) {
             const lastIdx = targets.length - 1;
-            const $tail = cheerio.load(originalHtml, { xml: true, decodeEntities: false });
+            const $tail = cheerio.load(originalHtml, { xmlMode: true, decodeEntities: false });
             const lastMarker = $tail(`[data-split-id="marker-${lastIdx}"]`)[0];
             if (lastMarker) {
                 pruneBefore($tail, lastMarker);
-                // Remove the last marker itself to get ONLY what follows
                 $tail(`[data-split-id="marker-${lastIdx}"]`).remove();
-                // Clean up ALL temporary attributes
                 $tail('[data-split-id]').removeAttr('data-split-id');
                 const tailXml = $tail.html();
-                // Avoid empty shells
                 if (tailXml.replace(/\s+/g, '').length > 50) {
                     const filename = `999_Postscript${ext}`;
                     await fs.writeFile(path.join(outputDir, filename), tailXml);
@@ -184,19 +207,16 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
             throw new Error(`No sections generated. Check selector: ${selector}`);
         }
 
-        // Zip the output
+        // Zip results
         const zipName = `split_${Date.now()}.zip`;
         const zipPath = path.join(__dirname, 'output', zipName);
-
         const output = fs.createWriteStream(zipPath);
         const archive = archiver('zip', { zlib: { level: 9 } });
 
         output.on('close', () => {
-            logger.info(`Successfully processed ${file.originalname}. ${sections.length} sections. Zip: ${zipPath}`);
+            logger.info(`Successfully processed ${file.originalname}. ${sections.length} sections.`);
             res.download(zipPath, zipName, async (err) => {
-                if (err) {
-                    logger.error(`Download error for ${zipName}: ${err.message}`);
-                }
+                if (err) logger.error(`Download error: ${err.message}`);
                 // Cleanup
                 await fs.remove(file.path).catch(() => { });
                 await fs.remove(outputDir).catch(() => { });
@@ -205,7 +225,6 @@ app.post('/split', uploadStub.single('file'), async (req, res, next) => {
         });
 
         archive.on('error', (err) => { throw err; });
-
         archive.pipe(output);
         archive.directory(outputDir, false);
         archive.finalize();
