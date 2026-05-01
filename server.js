@@ -258,6 +258,22 @@ app.post('/split', uploadStub.array('file'), async (req, res, next) => {
     }
 });
 
+const { exec } = require('child_process');
+
+app.post('/shutdown', (req, res) => {
+    logger.info('Shutdown requested via web interface.');
+    res.send('Shutting down Codespace...');
+    
+    // Shut down the codespace non-interactively
+    exec('gh codespace stop -c $CODESPACE_NAME', (error, stdout, stderr) => {
+        if (error) {
+            logger.error(`Error stopping codespace: ${error.message}`);
+        }
+        // Also exit the node process just in case
+        setTimeout(() => process.exit(0), 1000);
+    });
+});
+
 // Global Error Handler
 app.use((err, req, res, next) => {
     logger.error(`${err.message}\n${err.stack}`);

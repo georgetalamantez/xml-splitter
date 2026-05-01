@@ -116,6 +116,28 @@
             void status.offsetWidth;
             status.classList.add('visible');
         }
+
+        // Add shutdown functionality
+        const shutdownBtn = document.createElement('button');
+        shutdownBtn.type = 'button';
+        shutdownBtn.className = 'btn-primary';
+        shutdownBtn.style.marginTop = '20px';
+        shutdownBtn.style.backgroundColor = '#dc3545';
+        shutdownBtn.textContent = 'Shutdown Codespace';
+        shutdownBtn.onclick = async () => {
+            if (confirm('Are you sure you want to stop this Codespace?')) {
+                try {
+                    showStatus('Shutting down...', 'status-loading');
+                    await fetch('/shutdown', { method: 'POST' });
+                    showStatus('Codespace is shutting down. You can close this tab.', 'status-success');
+                    shutdownBtn.disabled = true;
+                    submitBtn.disabled = true;
+                } catch (err) {
+                    showStatus('Error shutting down: ' + err.message, 'status-error');
+                }
+            }
+        };
+        form.parentNode.appendChild(shutdownBtn);
     </script>
 </body>
 
